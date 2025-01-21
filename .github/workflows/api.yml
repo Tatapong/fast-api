@@ -36,7 +36,7 @@ jobs:
           # Display the Docker images available locally
           docker images
           # Run the Docker image locally for testing
-          docker run -d -p 80:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
+          docker run -d -p 80:8080 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
           sleep 10
           # Test the image by hitting the localhost endpoint
           curl http://localhost
