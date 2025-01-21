@@ -12,7 +12,7 @@ env:
   dockerhub_latest: latest
 
 jobs:
-  # Test job to test Python code
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -24,9 +24,7 @@ jobs:
           cd app/
           pytest        
 
-  # Build and push Docker image
   build-push-container:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,21 +36,28 @@ jobs:
           docker tag $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} $dockerhub_id/$dockerhub_repository:$dockerhub_latest
           # Display the Docker images available locally
           docker images
+
           # Run the Docker image locally for testing
-          docker run -d -p 80:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
-          sleep 10  # Wait for the container to start
+          docker run -d -p 8080:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
+          sleep 10  # Give the container time to start
+
+          # Verify the container is running
+          docker ps
+
           # Test the image by hitting the localhost endpoint
-          curl http://localhost
+          curl --max-time 30 http://localhost:8080  # Use port 8080 if using 80 internally
           sleep 5
+
           # Docker login using GitHub secrets (non-interactive)
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          
           # Push the images to Docker Hub
           docker push $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
           docker push $dockerhub_id/$dockerhub_repository:$dockerhub_latest
 
-  # Deploy job
   deploy:
     needs: build-push-container
+    name: deploy
     runs-on: ubuntu-latest
     steps:
       - name: executing remote ssh commands using password
