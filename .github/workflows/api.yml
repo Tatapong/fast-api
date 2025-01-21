@@ -11,6 +11,17 @@ env:
   dockerhub_id: fallewi
   dockerhub_repository: fastapi
   dockerhub_latest: latest
+
+jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Test python Code
+#       run: | 
+#         pip3 install -r requirements.txt 
+#         cd app/
+#         pytest
   secure:
     needs: test
     name: Microsoft Security DevOps Analysis
