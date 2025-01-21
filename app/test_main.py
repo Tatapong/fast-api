@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
-from app.main import app  # Ensure this correctly points to the FastAPI app instance
+from main import app  # Ensure this is correct if the app is in the same directory
 
 client = TestClient(app)
 
 def test_read_main():
-    response = client.get("/")  # Ensure this is the correct endpoint you want to test
+    response = client.get("/")  # Ensure this is the correct endpoint
     assert response.status_code == 200
-    assert response.json() == {"msg": "END OF DEMO: DEVOPS"}
+    assert response.json() == {"msg": "FIN DE LA DEMO DEVOPS"}
