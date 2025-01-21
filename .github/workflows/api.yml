@@ -12,6 +12,7 @@ env:
   dockerhub_latest: latest
 
 jobs:
+  # Test job to test Python code
   test:
     runs-on: ubuntu-latest
     steps:
@@ -21,23 +22,25 @@ jobs:
           pip3 install -r requirements.txt 
           pip install --upgrade fastapi starlette
           cd app/
-          pytest
+          pytest        
 
+  # Build and push Docker image
   build-push-container:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
         run: |
           # Build the Docker image with a commit-specific tag
-          docker build -t $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} . 
+          docker build -t $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} .
           # Tag the image with the "latest" tag
           docker tag $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} $dockerhub_id/$dockerhub_repository:$dockerhub_latest
           # Display the Docker images available locally
           docker images
           # Run the Docker image locally for testing
-          docker run -d -p 80:8080 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
-          sleep 10
+          docker run -d -p 80:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
+          sleep 10  # Wait for the container to start
           # Test the image by hitting the localhost endpoint
           curl http://localhost
           sleep 5
@@ -47,9 +50,9 @@ jobs:
           docker push $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
           docker push $dockerhub_id/$dockerhub_repository:$dockerhub_latest
 
+  # Deploy job
   deploy:
     needs: build-push-container
-    name: deploy
     runs-on: ubuntu-latest
     steps:
       - name: executing remote ssh commands using password
