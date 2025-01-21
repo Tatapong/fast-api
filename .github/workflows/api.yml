@@ -12,7 +12,18 @@ env:
   dockerhub_latest: latest
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test python Code
+        run: | 
+          pip3 install -r requirements.txt 
+          cd app/
+          pytest
+
   secure:
+    needs: test
     name: Microsoft Security DevOps Analysis
     runs-on: windows-latest
     steps:
@@ -31,15 +42,16 @@ jobs:
         with:  
           name: alerts
           path: ${{ steps.msdo.outputs.sarifFile }}
-        
+
   build-push-container:
+    needs: secure
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
         run: |
           # Build the Docker image with a commit-specific tag
-          docker build -t $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} .
+          docker build -t $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} . 
           # Tag the image with the "latest" tag
           docker tag $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} $dockerhub_id/$dockerhub_repository:$dockerhub_latest
           # Display the Docker images available locally
