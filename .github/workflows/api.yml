@@ -33,11 +33,14 @@ jobs:
           # Build the Docker image with a commit-specific tag
           docker build -t $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} .
           # Tag the image with the "latest" tag
+          sudo docker rm -f fastapi  # Remove any old containers
+          sudo docker rmi tatapong/fastapi:latest  # Remove old images
           docker tag $dockerhub_id/$dockerhub_repository:${GITHUB_SHA} $dockerhub_id/$dockerhub_repository:$dockerhub_latest
           # Display the Docker images available locally
           docker images
 
           # Run the Docker image locally for testing
+          
           docker run -d -p 80:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
           sleep 10  # Give the container time to start
 
