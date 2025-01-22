@@ -38,14 +38,14 @@ jobs:
           docker images
 
           # Run the Docker image locally for testing
-          docker run -d -p 8080:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
+          docker run -d -p 80:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
           sleep 10  # Give the container time to start
 
           # Verify the container is running
           docker ps
 
           # Test the image by hitting the localhost endpoint
-          curl --max-time 30 http://localhost:8080  # Use port 8080 if using 80 internally
+          curl --max-time 30 http://localhost:80  # Use port 8080 if using 80 internally
           sleep 5
 
           # Docker login using GitHub secrets (non-interactive)
@@ -71,10 +71,10 @@ jobs:
             # Remove the previous container
             sudo docker rm -f fastapi
             # Remove the previous Docker image
-            sudo docker rmi fallewi/fastapi:latest
+            sudo docker rmi tatapong/fastapi:latest
             sleep 10
             # Run the new container with the updated image
-            sudo docker run -d -p 9000:80 --name fastapi fallewi/fastapi:latest
+            sudo docker run -d -p 9000:80 --name fastapi tatapong/fastapi:latest
             sudo docker ps
             sleep 10
             # Test the image by hitting the localhost endpoint
