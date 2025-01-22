@@ -8,7 +8,7 @@ on:
 
 env:
   dockerhub_id: tatapong
-  dockerhub_repository: dst-fastapi
+  dockerhub_repository: repo-2
   dockerhub_latest: latest
 
 jobs:
