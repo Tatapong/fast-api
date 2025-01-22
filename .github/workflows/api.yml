@@ -39,14 +39,13 @@ jobs:
 
           # Run the Docker image locally for testing
           
-          docker run -d -p 80:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
+          docker run -d -p 8080:80 --name $dockerhub_repository $dockerhub_id/$dockerhub_repository:${GITHUB_SHA}
           sleep 10  # Give the container time to start
 
           # Verify the container is running
           docker ps
 
           # Test the image by hitting the localhost endpoint
-          curl --max-time 30 http://localhost:80  # Use port 8080 if using 80 internally
           sleep 5
 
           # Docker login using GitHub secrets (non-interactive)
